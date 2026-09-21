@@ -8,6 +8,10 @@ const router = createRouter({
       path: '/course',
       component: () => import('@/views/CourseCard.vue'),
     },
+    {
+      path: '/list',
+      component: () => import('@/views/ProductList.vue'),
+    },
   ],
 })
 
