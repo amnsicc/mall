@@ -1,38 +1,19 @@
-# mall
+# 微商城
 
-This template should help get you started developing with Vue 3 in Vite.
+《Web 前端框架技术》第 3 周课程项目。
 
-## Recommended IDE Setup
+## 功能
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- 课程名片与 Vue Router 路由
+- 可复用商品卡片与 Props 传值
+- 商品列表、库存状态和购物车计数
+- 商品收藏与取消收藏
 
-## Recommended Browser Setup
+## 运行
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```powershell
+pnpm install
+pnpm dev
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+商品图片来源见 [IMAGE_SOURCES.md](./IMAGE_SOURCES.md)。

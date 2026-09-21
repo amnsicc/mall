@@ -1,7 +1,18 @@
 <script setup>
+import { ref } from 'vue'
+
 defineProps({
   goods: { type: Object, required: true },
 })
+
+const isFavorite = ref(false)
+const favoriteCount = ref(0)
+
+function toggleFavorite(event) {
+  event.stopPropagation()
+  isFavorite.value = !isFavorite.value
+  favoriteCount.value = isFavorite.value ? 1 : 0
+}
 </script>
 
 <template>
@@ -18,6 +29,19 @@ defineProps({
       <div class="product-bottom">
         <p class="price">¥ {{ goods.price }}</p>
         <p class="stock">库存 {{ goods.stock }}</p>
+      </div>
+      <div class="favorite-row">
+        <button
+          type="button"
+          :class="{ active: isFavorite }"
+          :aria-pressed="isFavorite"
+          @click="toggleFavorite($event)"
+        >
+          <span aria-hidden="true">{{ isFavorite ? '♥' : '♡' }}</span>
+          {{ isFavorite ? '取消收藏' : '收藏' }}
+        </button>
+        <p v-if="favoriteCount > 0">收藏 {{ favoriteCount }}</p>
+        <p v-if="favoriteCount === 0">暂未收藏</p>
       </div>
     </div>
   </article>
@@ -104,5 +128,38 @@ h2 {
 .stock {
   color: #777169;
   font-size: 13px;
+}
+
+.favorite-row {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #ebe8e2;
+}
+
+button {
+  min-width: 104px;
+  height: 34px;
+  border: 1px solid #c6c1b8;
+  border-radius: 6px;
+  background: #fff;
+  color: #4d4943;
+  cursor: pointer;
+}
+
+button:hover,
+button.active {
+  border-color: #c43d2f;
+  color: #c43d2f;
+}
+
+.favorite-row p {
+  margin: 0;
+  color: #777169;
+  font-size: 12px;
 }
 </style>
