@@ -4,6 +4,7 @@
     <nav>
       <RouterLink to="/course">课程名片</RouterLink>
       <RouterLink to="/list">商品列表</RouterLink>
+      <RouterLink to="/holiday">假期商品</RouterLink>
     </nav>
   </header>
 
