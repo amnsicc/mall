@@ -11,39 +11,36 @@ const products = [
   { name: '得力 S01 黑色中性笔 30支', category: '文具', price: 25.9, quantity: 1 },
 ]
 
-const roundMoney = (value) => Number(value.toFixed(2))
+const total = (items) =>
+  items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
-const total = roundMoney(
-  products.reduce((sum, product) => sum + product.price * product.quantity, 0),
-)
+const mostExpensive = (items) =>
+  items.reduce((highest, item) => (item.price > highest.price ? item : highest))
 
-const mostExpensive = products.reduce((highest, product) =>
-  product.price > highest.price ? product : highest,
-)
+const averagePrice = (items) =>
+  items.map((item) => item.price).reduce((sum, price) => sum + price, 0) / items.length
 
-const averagePrice = roundMoney(
-  products.map((product) => product.price).reduce((sum, price) => sum + price, 0) /
-    products.length,
-)
+const categoryTotals = (items) =>
+  items.reduce((result, item) => {
+    result[item.category] = (result[item.category] ?? 0) + item.price * item.quantity
+    return result
+  }, {})
 
-const categoryTotals = products.reduce((totals, product) => {
-  totals[product.category] = roundMoney(
-    (totals[product.category] ?? 0) + product.price * product.quantity,
-  )
-  return totals
-}, {})
+const printReport = (items) => {
+  console.log('===== 商品清单报告 =====')
+  items.forEach((item, index) => {
+    console.log(
+      `${index + 1}. ${item.name}｜${item.category}｜¥${item.price.toFixed(2)} × ${item.quantity}`,
+    )
+  })
+  console.log('------------------------')
+  console.log(`总花费：¥${total(items).toFixed(2)}`)
+  console.log(`最贵商品：${mostExpensive(items).name}`)
+  console.log(`平均单价：¥${averagePrice(items).toFixed(2)}`)
+  console.log('分类小计：')
+  Object.entries(categoryTotals(items)).forEach(([category, subtotal]) => {
+    console.log(`${category}：¥${subtotal.toFixed(2)}`)
+  })
+}
 
-console.log('===== 商品清单报告 =====')
-products.forEach((product, index) => {
-  console.log(
-    `${index + 1}. ${product.name}｜${product.category}｜¥${product.price.toFixed(2)} × ${product.quantity}`,
-  )
-})
-console.log('------------------------')
-console.log(`总花费：¥${total.toFixed(2)}`)
-console.log(`最贵商品：${mostExpensive.name}`)
-console.log(`平均单价：¥${averagePrice.toFixed(2)}`)
-console.log('分类小计：')
-Object.entries(categoryTotals).forEach(([category, subtotal]) => {
-  console.log(`${category}：¥${subtotal.toFixed(2)}`)
-})
+printReport(products)
