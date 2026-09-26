@@ -1,11 +1,6 @@
 <template>
   <header class="site-header">
-    <RouterLink class="brand" to="/course">微商城</RouterLink>
-    <nav>
-      <RouterLink to="/course">课程名片</RouterLink>
-      <RouterLink to="/list">商品列表</RouterLink>
-      <RouterLink to="/holiday">假期商品</RouterLink>
-    </nav>
+    <RouterLink class="brand" to="/holiday">微商城</RouterLink>
   </header>
 
   <main>
@@ -18,7 +13,6 @@
   height: 64px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 6vw;
   border-bottom: 1px solid #dedbd5;
   background: #fff;
@@ -31,22 +25,6 @@
   text-decoration: none;
 }
 
-nav {
-  display: flex;
-  gap: 24px;
-}
-
-nav a {
-  color: #66625d;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-nav a.router-link-active {
-  color: #c43d2f;
-  font-weight: 700;
-}
-
 main {
   width: min(1080px, 88vw);
   margin: 0 auto;
@@ -57,11 +35,6 @@ main {
   .site-header {
     padding: 0 20px;
   }
-
-  nav {
-    gap: 14px;
-  }
-
   main {
     width: calc(100% - 40px);
     padding-top: 36px;

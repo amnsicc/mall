@@ -19,7 +19,7 @@ function toggleFavorite(event) {
   <article class="product-card">
     <div class="image-wrap">
       <img :src="goods.img" :alt="goods.name" />
-      <span :class="{ on: goods.stock > 0 }">
+      <span v-if="!goods.quantity" :class="{ on: goods.stock > 0 }">
         {{ goods.stock > 0 ? '现货' : '缺货' }}
       </span>
     </div>
@@ -28,8 +28,7 @@ function toggleFavorite(event) {
       <h2>{{ goods.name }}</h2>
       <div class="product-bottom">
         <p class="price">¥ {{ goods.price }}</p>
-        <p v-if="goods.quantity" class="stock">浏览数量 {{ goods.quantity }}</p>
-        <p v-else class="stock">库存 {{ goods.stock }}</p>
+        <p v-if="!goods.quantity" class="stock">库存 {{ goods.stock }}</p>
       </div>
       <div class="favorite-row">
         <button
@@ -44,16 +43,6 @@ function toggleFavorite(event) {
         <p v-if="favoriteCount > 0">收藏 {{ favoriteCount }}</p>
         <p v-if="favoriteCount === 0">暂未收藏</p>
       </div>
-      <a
-        v-if="goods.sourceUrl"
-        class="source-link"
-        :href="goods.sourceUrl"
-        target="_blank"
-        rel="noreferrer"
-        @click.stop
-      >
-        查看京东来源 ↗
-      </a>
     </div>
   </article>
 </template>
@@ -65,7 +54,6 @@ function toggleFavorite(event) {
   border: 1px solid #dedbd5;
   border-radius: 8px;
   background: #fff;
-  cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
@@ -174,15 +162,4 @@ button.active {
   font-size: 12px;
 }
 
-.source-link {
-  display: inline-block;
-  margin-top: 14px;
-  color: #315c83;
-  font-size: 12px;
-  text-decoration: none;
-}
-
-.source-link:hover {
-  text-decoration: underline;
-}
 </style>

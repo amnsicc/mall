@@ -20,17 +20,6 @@ const categoryCount = computed(
 
 <template>
   <section class="holiday-page">
-    <header class="page-header">
-      <div>
-        <p class="label">HOLIDAY WINDOW SHOPPING · 2026</p>
-        <h1>假期云逛街清单</h1>
-        <p class="intro">从京东浏览了 10 件商品，只做数据统计，没有下单购买。</p>
-      </div>
-      <a class="source-button" href="https://www.jd.com" target="_blank" rel="noreferrer">
-        京东来源 ↗
-      </a>
-    </header>
-
     <dl class="summary" aria-label="商品统计摘要">
       <div>
         <dt>预计总花费</dt>
@@ -51,8 +40,7 @@ const categoryCount = computed(
     </dl>
 
     <div class="section-heading">
-      <h2>浏览商品</h2>
-      <p>价格为 2026-09-26 浏览估价</p>
+      <h2>商品清单</h2>
     </div>
 
     <div class="product-grid">
@@ -68,45 +56,6 @@ const categoryCount = computed(
 <style scoped>
 .holiday-page {
   color: #20211f;
-}
-
-.page-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px;
-  margin-bottom: 28px;
-}
-
-.label {
-  margin: 0 0 10px;
-  color: #c43d2f;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-h1 {
-  margin: 0;
-  font-family: Georgia, "Songti SC", serif;
-  font-size: 48px;
-  line-height: 1.15;
-}
-
-.intro {
-  margin: 14px 0 0;
-  color: #66625d;
-  line-height: 1.7;
-}
-
-.source-button {
-  flex: none;
-  padding: 10px 14px;
-  border: 1px solid #315c83;
-  border-radius: 6px;
-  color: #315c83;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
 }
 
 .summary {
@@ -148,18 +97,12 @@ dd {
   margin-bottom: 20px;
 }
 
-.section-heading h2,
-.section-heading p {
+.section-heading h2 {
   margin: 0;
 }
 
 .section-heading h2 {
   font-size: 24px;
-}
-
-.section-heading p {
-  color: #777169;
-  font-size: 12px;
 }
 
 .product-grid {
@@ -187,14 +130,9 @@ dd {
 }
 
 @media (max-width: 560px) {
-  .page-header,
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  h1 {
-    font-size: 36px;
   }
 
   .summary,

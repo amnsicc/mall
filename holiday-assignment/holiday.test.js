@@ -12,7 +12,13 @@ import {
 
 test('商品数据包含 10 件云逛街商品', () => {
   assert.equal(products.length, 10)
-  assert.ok(products.every((product) => product.sourceUrl.includes('jd.com')))
+  assert.ok(
+    products.every(
+      (product) =>
+        product.name && product.category && product.price > 0 && product.quantity > 0,
+    ),
+  )
+  assert.ok(products.every((product) => !('sourceUrl' in product)))
 })
 
 test('总花费按单价乘数量计算', () => {

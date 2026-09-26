@@ -6,4 +6,4 @@
 
 ## 假期商品页
 
-`public/img/holiday/` 下的 10 张商品图来自对应京东商品页，仅用于课程实践展示。商品名称、页面链接和查询日期见 [`holiday-assignment/product-sources.md`](./holiday-assignment/product-sources.md)。
+`public/img/holiday/` 下的 10 张商品图来自浏览时的京东商品页面或商品列表，仅用于课程实践展示。商品名称、估价和查询日期见 [`holiday-assignment/product-sources.md`](./holiday-assignment/product-sources.md)。
