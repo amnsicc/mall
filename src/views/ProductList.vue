@@ -13,8 +13,17 @@ const products = ref([
   { id: 6, name: 'Type C Mouse', price: 159, stock: 30, category: 'mouse', img: '/img/mouse.jpg' },
 ])
 
-const { keyword, query, search, category, priceMax, desc, categories, sorted } =
-  useProductFilter(products)
+const {
+  keyword,
+  query,
+  search,
+  resetFilters,
+  category,
+  priceMax,
+  desc,
+  categories,
+  sorted,
+} = useProductFilter(products)
 
 function doSearch(value = keyword.value) {
   keyword.value = value.trim()
@@ -35,12 +44,26 @@ const STORAGE_KEY = 'product-filter-draft'
 const draft = localStorage.getItem(STORAGE_KEY)
 
 if (draft !== null) {
-  keyword.value = draft
-  search(draft)
+  try {
+    const savedDraft = JSON.parse(draft)
+    keyword.value = typeof savedDraft.keyword === 'string' ? savedDraft.keyword : ''
+    selectedId.value = products.value.some(
+      (product) => product.id === savedDraft.selectedId,
+    )
+      ? savedDraft.selectedId
+      : null
+  } catch {
+    keyword.value = draft
+  }
+
+  search(keyword.value)
 }
 
-watch(keyword, (newValue) => {
-  localStorage.setItem(STORAGE_KEY, newValue)
+watch([keyword, selectedId], ([newKeyword, newSelectedId]) => {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({ keyword: newKeyword, selectedId: newSelectedId }),
+  )
 })
 </script>
 
@@ -48,7 +71,7 @@ watch(keyword, (newValue) => {
   <section>
     <header class="page-header">
       <div>
-        <p class="label">WEEK 03 · PRODUCT LIST</p>
+        <p class="label">WEEK 06 · PRODUCT LIST</p>
         <h1>本周精选</h1>
       </div>
       <p v-show="cartCount > 0" class="cart-count">购物车 {{ cartCount }} 件</p>
@@ -62,6 +85,9 @@ watch(keyword, (newValue) => {
         @keyup.enter="doSearch($event.target.value)"
       />
       <button class="search-button" type="button" @click="doSearch()">搜索</button>
+      <button class="reset-button" type="button" @click="resetFilters">
+        重置筛选
+      </button>
 
       <select v-model="category" aria-label="商品分类">
         <option v-for="item in categories" :key="item" :value="item">
@@ -166,6 +192,21 @@ h1 {
 .search-button:hover {
   background: #c43d2f;
   border-color: #c43d2f;
+}
+
+.reset-button {
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid #c6c1b8;
+  border-radius: 6px;
+  background: #fff;
+  color: #4d4943;
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  border-color: #c43d2f;
+  color: #c43d2f;
 }
 
 .toolbar select {

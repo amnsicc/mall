@@ -11,6 +11,14 @@ export function useProductFilter(products) {
     query.value = value.trim().toLowerCase()
   }
 
+  function resetFilters() {
+    keyword.value = ''
+    query.value = ''
+    category.value = 'all'
+    priceMax.value = Infinity
+    desc.value = false
+  }
+
   const filtered = computed(() => {
     return products.value.filter(
       (product) =>
@@ -38,6 +46,7 @@ export function useProductFilter(products) {
     keyword,
     query,
     search,
+    resetFilters,
     category,
     priceMax,
     desc,
