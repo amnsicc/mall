@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import { useProductFilter } from '@/composables/useProductFilter'
 
@@ -13,12 +13,35 @@ const products = ref([
   { id: 6, name: 'Type C Mouse', price: 159, stock: 30, category: 'mouse', img: '/img/mouse.jpg' },
 ])
 
-const { keyword, category, priceMax, desc, categories, sorted } =
+const { keyword, query, search, category, priceMax, desc, categories, sorted } =
   useProductFilter(products)
+
+function doSearch(value = keyword.value) {
+  keyword.value = value.trim()
+  search(keyword.value)
+}
+
+const selectedId = ref(null)
+
+function toggleSelect(id) {
+  selectedId.value = selectedId.value === id ? null : id
+}
 
 function addToCart() {
   cartCount.value++
 }
+
+const STORAGE_KEY = 'product-filter-draft'
+const draft = localStorage.getItem(STORAGE_KEY)
+
+if (draft !== null) {
+  keyword.value = draft
+  search(draft)
+}
+
+watch(keyword, (newValue) => {
+  localStorage.setItem(STORAGE_KEY, newValue)
+})
 </script>
 
 <template>
@@ -32,7 +55,13 @@ function addToCart() {
     </header>
 
     <div class="toolbar">
-      <input v-model="keyword" type="search" placeholder="搜索商品" />
+      <input
+        v-model.lazy.trim="keyword"
+        type="search"
+        placeholder="输入后按回车搜索"
+        @keyup.enter="doSearch($event.target.value)"
+      />
+      <button class="search-button" type="button" @click="doSearch()">搜索</button>
 
       <select v-model="category" aria-label="商品分类">
         <option v-for="item in categories" :key="item" :value="item">
@@ -52,14 +81,19 @@ function addToCart() {
       </label>
     </div>
 
-    <p class="result-tip">共 {{ sorted.length }} 件结果</p>
+    <p class="result-tip">
+      输入框“{{ keyword || '（空）' }}” · 已提交“{{ query || '（空）' }}” · 共
+      {{ sorted.length }} 件
+    </p>
 
     <div v-if="sorted.length > 0" class="product-grid">
       <ProductCard
         v-for="product in sorted"
         :key="product.id"
         :goods="product"
-        @click="addToCart"
+        :class="{ selected: product.id === selectedId }"
+        @click="toggleSelect(product.id)"
+        @add="addToCart"
       />
     </div>
     <p v-if="sorted.length === 0" class="empty">没有找到相关商品</p>
@@ -117,6 +151,21 @@ h1 {
   background: #fff;
   color: #1d1d1b;
   outline: none;
+}
+
+.search-button {
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid #1d1d1b;
+  border-radius: 6px;
+  background: #1d1d1b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background: #c43d2f;
+  border-color: #c43d2f;
 }
 
 .toolbar select {

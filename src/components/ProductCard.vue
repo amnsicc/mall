@@ -1,17 +1,20 @@
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
   goods: { type: Object, required: true },
 })
+const emit = defineEmits(['add'])
 
 const isFavorite = ref(false)
-const favoriteCount = ref(0)
 
 function toggleFavorite(event) {
   event.stopPropagation()
   isFavorite.value = !isFavorite.value
-  favoriteCount.value = isFavorite.value ? 1 : 0
+}
+
+function addToCart() {
+  emit('add', props.goods)
 }
 </script>
 
@@ -32,6 +35,7 @@ function toggleFavorite(event) {
       </div>
       <div class="favorite-row">
         <button
+          class="favorite-button"
           type="button"
           :class="{ active: isFavorite }"
           :aria-pressed="isFavorite"
@@ -40,8 +44,16 @@ function toggleFavorite(event) {
           <span aria-hidden="true">{{ isFavorite ? '♥' : '♡' }}</span>
           {{ isFavorite ? '取消收藏' : '收藏' }}
         </button>
-        <p v-if="favoriteCount > 0">收藏 {{ favoriteCount }}</p>
-        <p v-if="favoriteCount === 0">暂未收藏</p>
+        <button
+          v-if="goods.stock !== undefined"
+          class="add-button"
+          type="button"
+          :class="{ disabled: goods.stock === 0 }"
+          :disabled="goods.stock === 0"
+          @click.stop="addToCart"
+        >
+          {{ goods.stock === 0 ? '无货' : '加入购物车' }}
+        </button>
       </div>
     </div>
   </article>
@@ -60,6 +72,16 @@ function toggleFavorite(event) {
 .product-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 16px 32px rgb(45 39 32 / 12%);
+}
+
+.product-card.selected {
+  border-color: #c43d2f;
+  background: #fff4f1;
+  box-shadow: 0 0 0 3px rgb(196 61 47 / 16%);
+}
+
+.product-card.selected:hover {
+  transform: none;
 }
 
 .image-wrap {
@@ -140,7 +162,8 @@ h2 {
   border-top: 1px solid #ebe8e2;
 }
 
-button {
+.favorite-button,
+.add-button {
   min-width: 104px;
   height: 34px;
   border: 1px solid #c6c1b8;
@@ -150,16 +173,29 @@ button {
   cursor: pointer;
 }
 
-button:hover,
-button.active {
+.favorite-button:hover,
+.favorite-button.active {
   border-color: #c43d2f;
   color: #c43d2f;
 }
 
-.favorite-row p {
-  margin: 0;
-  color: #777169;
-  font-size: 12px;
+.add-button {
+  border-color: #1d1d1b;
+  background: #1d1d1b;
+  color: #fff;
+}
+
+.add-button:hover {
+  border-color: #c43d2f;
+  background: #c43d2f;
+}
+
+.add-button.disabled,
+.add-button:disabled {
+  border-color: #dedbd5;
+  background: #ebe8e2;
+  color: #9a958d;
+  cursor: not-allowed;
 }
 
 </style>
