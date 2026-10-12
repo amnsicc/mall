@@ -1,13 +1,21 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 
 const cartCount = ref(0)
+const keyword = ref('')
 const products = ref([
   { id: 1, name: '机械键盘', price: 199, stock: 5, img: '/img/keyboard.jpg' },
   { id: 2, name: '无线鼠标', price: 99, stock: 12, img: '/img/mouse.jpg' },
   { id: 3, name: 'USB-C 扩展坞', price: 159, stock: 0, img: '/img/hub.png' },
 ])
+
+const filteredProducts = computed(() => {
+  const normalizedKeyword = keyword.value.trim().toLowerCase()
+  return products.value.filter((product) =>
+    product.name.toLowerCase().includes(normalizedKeyword),
+  )
+})
 
 function addToCart() {
   cartCount.value++
@@ -24,15 +32,20 @@ function addToCart() {
       <p v-show="cartCount > 0" class="cart-count">购物车 {{ cartCount }} 件</p>
     </header>
 
-    <div v-if="products.length > 0" class="product-grid">
+    <div class="toolbar">
+      <input v-model="keyword" type="search" placeholder="搜索商品" />
+      <span v-show="keyword">共 {{ filteredProducts.length }} 件结果</span>
+    </div>
+
+    <div v-if="filteredProducts.length > 0" class="product-grid">
       <ProductCard
-        v-for="product in products"
+        v-for="product in filteredProducts"
         :key="product.id"
         :goods="product"
         @click="addToCart"
       />
     </div>
-    <p v-if="products.length === 0" class="empty">暂无商品，老板进货中……</p>
+    <p v-if="filteredProducts.length === 0" class="empty">没有找到相关商品</p>
   </section>
 </template>
 
@@ -67,6 +80,33 @@ h1 {
   color: #fff;
   font-size: 14px;
   font-weight: 700;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.toolbar input {
+  width: min(360px, 100%);
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #c6c1b8;
+  border-radius: 6px;
+  background: #fff;
+  color: #1d1d1b;
+  outline: none;
+}
+
+.toolbar input:focus {
+  border-color: #c43d2f;
+}
+
+.toolbar span {
+  color: #777169;
+  font-size: 13px;
 }
 
 .product-grid {
