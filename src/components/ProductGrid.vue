@@ -9,7 +9,9 @@ const { viewport, rememberScroll } = useViewScroll()
   <div ref="viewport" class="product-grid view-scroll" @scroll="rememberScroll">
     <ProductCard v-for="p in goods" :key="p.id" :goods="p" :class="{ selected: p.id === selectedId }"
       @click="emit('select', p.id)" @add="emit('add', $event)">
-      <template #title><h2 class="product-title">{{ p.name }}</h2></template>
+      <template #title>
+        <h2 class="product-title"><RouterLink :to="{ name: 'detail', params: { id: p.id } }" @click.stop>{{ p.name }}</RouterLink></h2>
+      </template>
     </ProductCard>
   </div>
 </template>
@@ -17,6 +19,8 @@ const { viewport, rememberScroll } = useViewScroll()
 .view-scroll { max-height: 720px; overflow: auto; padding: 4px; }
 .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .product-title { font: 600 22px Georgia, 'Songti SC', serif; margin: 0 0 24px; overflow-wrap: anywhere; }
+.product-title a { color: inherit; text-decoration: none; }
+.product-title a:hover { text-decoration: underline; }
 @media (max-width: 960px) { .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .product-grid { grid-template-columns: 1fr; } }
 </style>

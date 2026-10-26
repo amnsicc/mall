@@ -1,7 +1,10 @@
 <script setup>
 import { useRoute } from 'vue-router'
+import ProductDetailView from '@/components/ProductDetailView.vue'
+import { useProductDetail } from '@/composables/useProductDetail'
 const route = useRoute()
+const { detail, state, error, load } = useProductDetail(() => route.params.id)
 </script>
 <template>
-  <section><RouterLink to="/products">返回商品列表</RouterLink><h1>商品 {{ route.params.id }}</h1><p>商品详情</p></section>
+  <ProductDetailView :detail="detail" :state="state" :error="error" @retry="load" />
 </template>

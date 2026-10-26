@@ -11,6 +11,7 @@ const router = createRouter({
     { path: '/', redirect: '/products' },
     { path: '/products', name: 'products', component: () => import('@/views/ProductList.vue') },
     { path: '/products/:id', name: 'detail', component: () => import('@/views/ProductDetail.vue') },
+    { path: '/props/:id', name: 'detail-props', props: true, component: () => import('@/views/ProductDetailProps.vue') },
     { path: '/cart', name: 'cart', component: () => import('@/views/Cart.vue') },
     {
       path: '/course',
