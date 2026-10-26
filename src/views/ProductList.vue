@@ -20,7 +20,11 @@ function addToCart() { cartCount.value++ }
       <p class="cart-count">购物车 {{ cartCount }} 件</p>
     </header>
     <SearchBar v-model:keyword="keyword" v-model:category="category" v-model:price-max="priceMax"
-      v-model:desc="desc" :categories="categories" @search="search" @reset="resetFilters" />
+      v-model:desc="desc" :categories="categories" @do-search="search" @do-reset="resetFilters" />
+    <dl class="flow-board">
+      <div><dt>数据流 keyword</dt><dd>{{ keyword || '（空）' }}</dd></div>
+      <div><dt>动作流 query</dt><dd>{{ query || '（空）' }}</dd></div>
+    </dl>
     <p class="result-tip">输入框“{{ keyword || '（空）' }}” · 已提交“{{ query || '（空）' }}” · 共 {{ sorted.length }} 件</p>
     <div class="product-grid">
       <ProductCard v-for="product in sorted" :key="product.id" :goods="product"

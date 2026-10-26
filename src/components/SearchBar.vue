@@ -1,17 +1,28 @@
 <script setup>
 defineProps({ categories: { type: Array, required: true } })
-const keyword = defineModel('keyword', {})
-const category = defineModel('category', {})
-const priceMax = defineModel('priceMax', {})
-const desc = defineModel('desc', {})
-const emit = defineEmits(['search', 'reset'])
+const keyword = defineModel('keyword', { type: String, default: '' })
+const category = defineModel('category', { type: String, default: 'all' })
+const priceMax = defineModel('priceMax', { type: Number, default: Infinity })
+const desc = defineModel('desc', { type: Boolean, default: false })
+const emit = defineEmits({
+  'do-search': (value) => typeof value === 'string',
+  'do-reset': () => true,
+})
+
+function doReset() {
+  keyword.value = ''
+  category.value = 'all'
+  priceMax.value = Infinity
+  desc.value = false
+  emit('do-reset')
+}
 </script>
 
 <template>
-  <form class="toolbar" @submit.prevent="emit('search', keyword)">
+  <form class="toolbar" @submit.prevent="keyword && emit('do-search', keyword)">
     <input v-model.trim="keyword" type="search" aria-label="搜索商品" placeholder="输入后按回车搜索" />
-    <button class="search-button" type="submit">搜索</button>
-    <button type="button" @click="emit('reset')">重置筛选</button>
+    <button class="search-button" type="submit" :disabled="!keyword">搜索</button>
+    <button type="button" @click="doReset">重置筛选</button>
     <select v-model="category" aria-label="商品分类">
       <option v-for="item in categories" :key="item" :value="item">{{ item === 'all' ? '全部分类' : item }}</option>
     </select>
@@ -31,6 +42,7 @@ input[type='search'], select, button { height: 40px; padding: 0 12px; border: 1p
 button { cursor: pointer; }
 button:hover { border-color: #c43d2f; }
 .search-button { background: #202020; color: #fff; border-color: #202020; }
+.search-button:disabled { opacity: .45; cursor: not-allowed; }
 input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid #c43d2f; outline-offset: 2px; }
 .filter-field { display: inline-flex; align-items: center; gap: 8px; color: #666; font-size: 13px; }
 .filter-field input { accent-color: #c43d2f; }
