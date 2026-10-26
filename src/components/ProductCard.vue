@@ -21,19 +21,20 @@ function addToCart() {
 <template>
   <article class="product-card">
     <div class="image-wrap">
-      <img :src="goods.img" :alt="goods.name" />
+      <slot name="cover" :goods="goods"><img :src="goods.img" :alt="goods.name" /></slot>
       <span v-if="!goods.quantity" :class="{ on: goods.stock > 0 }">
         {{ goods.stock > 0 ? '现货' : '缺货' }}
       </span>
     </div>
     <div class="product-info">
       <p class="category">{{ goods.category ?? '数码配件' }}</p>
-      <h2>{{ goods.name }}</h2>
+      <slot name="title" :goods="goods"><h2>{{ goods.name }}</h2></slot>
       <div class="product-bottom">
         <p class="price">¥ {{ goods.price }}</p>
         <p v-if="!goods.quantity" class="stock">库存 {{ goods.stock }}</p>
       </div>
       <div class="favorite-row">
+        <slot name="actions" :goods="goods" :add="addToCart">
         <button
           class="favorite-button"
           type="button"
@@ -54,6 +55,7 @@ function addToCart() {
         >
           {{ goods.stock === 0 ? '无货' : '加入购物车' }}
         </button>
+        </slot>
       </div>
     </div>
   </article>
@@ -157,6 +159,7 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
   margin-top: 18px;
   padding-top: 16px;
   border-top: 1px solid #ebe8e2;

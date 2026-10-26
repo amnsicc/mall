@@ -7,4 +7,8 @@ const app = createApp(App)
 
 app.use(router)
 
+app.directive('focus', {
+  mounted(el, binding) { if (binding.value !== false) el.focus({ preventScroll: true }) },
+})
+
 app.mount('#app')

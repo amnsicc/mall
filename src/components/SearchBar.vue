@@ -20,7 +20,7 @@ function doReset() {
 
 <template>
   <form class="toolbar" @submit.prevent="keyword && emit('do-search', keyword)">
-    <input v-model.trim="keyword" type="search" aria-label="搜索商品" placeholder="输入后按回车搜索" />
+    <input v-focus v-model.trim="keyword" type="search" aria-label="搜索商品" placeholder="输入后按回车搜索" />
     <button class="search-button" type="submit" :disabled="!keyword">搜索</button>
     <button type="button" @click="doReset">重置筛选</button>
     <select v-model="category" aria-label="商品分类">
