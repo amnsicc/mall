@@ -79,7 +79,7 @@ function addToCart() {
 
 .product-card.selected {
   border-color: #c43d2f;
-  background: #fff4f1;
+  background: #fff;
   box-shadow: 0 0 0 3px rgb(196 61 47 / 16%);
 }
 
@@ -91,7 +91,7 @@ function addToCart() {
   position: relative;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: #ece9e3;
+  background: #fff;
 }
 
 img {

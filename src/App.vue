@@ -8,9 +8,6 @@ const { cartCount } = useCart()
     <nav aria-label="主导航">
       <RouterLink to="/products">商品</RouterLink>
       <RouterLink to="/cart">购物车 {{ cartCount }}</RouterLink>
-      <RouterLink to="/holiday">假期清单</RouterLink>
-      <RouterLink to="/course">课程名片</RouterLink>
-      <RouterLink to="/admin">后台</RouterLink>
     </nav>
   </header>
 
@@ -47,7 +44,8 @@ nav a.router-link-active { color: #c43d2f; }
 main {
   width: min(1080px, 88vw);
   margin: 0 auto;
-  padding: 56px 0 80px;
+  padding: 28px 0 64px;
+  background: #fff;
 }
 
 @media (max-width: 560px) {
@@ -56,7 +54,7 @@ main {
   }
   main {
     width: calc(100% - 40px);
-    padding-top: 36px;
+    padding-top: 24px;
   }
 }
 </style>

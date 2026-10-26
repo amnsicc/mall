@@ -26,10 +26,6 @@ function onCardClick(id) {
 
 <template>
   <section>
-    <header class="page-header">
-      <div><p class="label">WEEK 08 · PRODUCT LIST</p><h1>本周精选</h1></div>
-      <p class="cart-count">购物车 {{ cartCount }} 件</p>
-    </header>
     <SearchBar v-model:keyword="keyword" v-model:category="category" v-model:price-max="priceMax"
       v-model:desc="desc" :categories="categories" @do-search="search" @do-reset="resetFilters" />
     <p class="result-tip">{{ query ? `“${query}” · ` : '' }}共 {{ sorted.length }} 件商品</p>
