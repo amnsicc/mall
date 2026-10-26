@@ -57,6 +57,7 @@ function addToCart() {
         </button>
         </slot>
       </div>
+      <slot name="footer" :goods="goods" />
     </div>
   </article>
 </template>

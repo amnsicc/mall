@@ -10,6 +10,7 @@ const { cartCount } = useCart()
       <RouterLink to="/cart">购物车 {{ cartCount }}</RouterLink>
       <RouterLink to="/holiday">假期清单</RouterLink>
       <RouterLink to="/course">课程名片</RouterLink>
+      <RouterLink to="/admin">后台</RouterLink>
     </nav>
   </header>
 

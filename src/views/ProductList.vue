@@ -20,7 +20,7 @@ const { keyword, query, search, resetFilters, category, priceMax, desc, categori
 const { selectedId, toggleSelect } = useProductDraft(keyword, search, products)
 function onCardClick(id) {
   toggleSelect(id)
-  router.push({ name: 'detail', params: { id } })
+  router.push(`/products/${id}`)
 }
 </script>
 
@@ -51,7 +51,13 @@ function onCardClick(id) {
           </template>
         </component>
       </KeepAlive>
-      <template #footer>当前分类：{{ category === 'all' ? '全部' : category }} · 购物车 {{ cartCount }} 件</template>
+      <template #footer>
+        <div class="list-footer">
+          <span>当前分类：{{ category === 'all' ? '全部' : category }} · 购物车 {{ cartCount }} 件</span>
+          <RouterLink :to="{ name: 'detail', params: { id: 1 } }">机械 Key</RouterLink>
+          <button type="button" @click="router.push('/props/1')">Props 详情</button>
+        </div>
+      </template>
     </Panel>
     <p v-if="sorted.length === 0" class="empty">没有找到相关商品</p>
   </section>

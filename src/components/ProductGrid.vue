@@ -12,6 +12,9 @@ const { viewport, rememberScroll } = useViewScroll()
       <template #title>
         <h2 class="product-title"><RouterLink :to="{ name: 'detail', params: { id: p.id } }" @click.stop>{{ p.name }}</RouterLink></h2>
       </template>
+      <template #footer>
+        <RouterLink class="props-link" :to="{ name: 'detail-props', params: { id: p.id } }" @click.stop>Props 详情</RouterLink>
+      </template>
     </ProductCard>
   </div>
 </template>
@@ -21,6 +24,7 @@ const { viewport, rememberScroll } = useViewScroll()
 .product-title { font: 600 22px Georgia, 'Songti SC', serif; margin: 0 0 24px; overflow-wrap: anywhere; }
 .product-title a { color: inherit; text-decoration: none; }
 .product-title a:hover { text-decoration: underline; }
+.props-link { display: inline-block; margin-top: 12px; color: #666; font-size: 12px; text-underline-offset: 3px; }
 @media (max-width: 960px) { .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .product-grid { grid-template-columns: 1fr; } }
 </style>

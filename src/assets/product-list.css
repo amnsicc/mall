@@ -6,6 +6,9 @@ h1 { margin: 0; font-family: Georgia, 'Songti SC', serif; font-size: 38px; }
 .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .empty { padding: 48px 16px; border-block: 1px solid #ddd; text-align: center; color: #666; }
 .section-title { margin: 0; font-size: 20px; }
+.list-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
+.list-footer a { color: #555; text-underline-offset: 3px; }
+.list-footer button { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; background: #fff; color: #555; font: inherit; cursor: pointer; }
 .view-modes { display: inline-flex; }
 .view-modes button { min-width: 64px; height: 34px; border: 1px solid #ccc; background: #fff; color: #444; cursor: pointer; font: inherit; }
 .view-modes button:first-child { border-radius: 6px 0 0 6px; }

@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { products } from '@/data/products'
+import { products } from '../data/products.js'
 
 const quantities = ref({})
 const items = computed(() => products.filter((p) => quantities.value[p.id] > 0)

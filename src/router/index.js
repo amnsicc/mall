@@ -13,6 +13,16 @@ const router = createRouter({
     { path: '/products/:id', name: 'detail', component: () => import('@/views/ProductDetail.vue') },
     { path: '/props/:id', name: 'detail-props', props: true, component: () => import('@/views/ProductDetailProps.vue') },
     { path: '/cart', name: 'cart', component: () => import('@/views/Cart.vue') },
+    { path: '/login', name: 'login', meta: { guest: true }, component: () => import('@/views/Login.vue') },
+    {
+      path: '/admin', component: () => import('@/views/AdminLayout.vue'),
+      meta: { requiresAuth: true },
+      children: [
+        { path: '', redirect: '/admin/products' },
+        { path: 'products', name: 'admin-products', component: () => import('@/views/AdminProducts.vue') },
+        { path: 'orders', name: 'admin-orders', component: () => import('@/views/AdminOrders.vue') },
+      ],
+    },
     {
       path: '/course',
       component: () => import('@/views/CourseCard.vue'),
@@ -27,6 +37,15 @@ const router = createRouter({
     },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/views/NotFound.vue') },
   ],
+})
+
+router.beforeEach((to) => {
+  if (to.meta.guest) return true
+  // Read storage on each navigation, including the first navigation after a refresh.
+  if (to.meta.requiresAuth && !localStorage.getItem('token')) {
+    return { name: 'login', query: { from: to.fullPath } }
+  }
+  return true
 })
 
 export default router
