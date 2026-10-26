@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import SearchBar from '@/components/SearchBar.vue'
 import ProductCard from '@/components/ProductCard.vue'
 import Panel from '@/components/Panel.vue'
@@ -8,20 +9,25 @@ import ProductRow from '@/components/ProductRow.vue'
 import { products as catalog } from '@/data/products'
 import { useProductFilter } from '@/composables/useProductFilter'
 import { useProductDraft } from '@/composables/useProductDraft'
+import { useCart } from '@/composables/useCart'
 
-const cartCount = ref(0)
+const { cartCount, addToCart } = useCart()
+const router = useRouter()
 const view = ref('grid')
 const views = { grid: ProductGrid, row: ProductRow }
 const products = ref(catalog)
 const { keyword, query, search, resetFilters, category, priceMax, desc, categories, sorted } = useProductFilter(products)
 const { selectedId, toggleSelect } = useProductDraft(keyword, search, products)
-function addToCart() { cartCount.value++ }
+function onCardClick(id) {
+  toggleSelect(id)
+  router.push({ name: 'detail', params: { id } })
+}
 </script>
 
 <template>
   <section>
     <header class="page-header">
-      <div><p class="label">WEEK 07 · PRODUCT LIST</p><h1>本周精选</h1></div>
+      <div><p class="label">WEEK 08 · PRODUCT LIST</p><h1>本周精选</h1></div>
       <p class="cart-count">购物车 {{ cartCount }} 件</p>
     </header>
     <SearchBar v-model:keyword="keyword" v-model:category="category" v-model:price-max="priceMax"
@@ -36,11 +42,11 @@ function addToCart() { cartCount.value++ }
         </div>
       </template>
       <KeepAlive>
-        <component :is="views[view]" :goods="sorted" :selected-id="selectedId" @select="toggleSelect" @add="addToCart">
+        <component :is="views[view]" :goods="sorted" :selected-id="selectedId" @select="onCardClick" @add="addToCart">
           <template #row="{ item, index }">
             <li :aria-label="`第 ${index + 1} 件商品`">
               <ProductCard :goods="item" :class="{ selected: item.id === selectedId }"
-                @click="toggleSelect(item.id)" @add="addToCart" />
+                @click="onCardClick(item.id)" @add="addToCart" />
             </li>
           </template>
         </component>
