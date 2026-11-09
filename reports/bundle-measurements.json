@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-09T02:42:54.625Z",
+  "scope": "all JS/CSS chunks, excluding images; identical source, full adds global registration and full CSS",
+  "measurements": [
+    {
+      "mode": "full",
+      "jsBytes": 1041713,
+      "cssBytes": 436738,
+      "jsGzipBytes": 339976,
+      "cssGzipBytes": 62466
+    },
+    {
+      "mode": "on-demand",
+      "jsBytes": 305295,
+      "cssBytes": 76568,
+      "jsGzipBytes": 114900,
+      "cssGzipBytes": 14512
+    }
+  ]
+}

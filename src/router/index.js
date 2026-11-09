@@ -9,6 +9,7 @@ const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', redirect: '/products' },
+    { path: '/ui-lab', component: () => import('@/views/UiLab.vue') },
     { path: '/products', name: 'products', component: () => import('@/views/ProductList.vue') },
     { path: '/products/:id', name: 'detail', component: () => import('@/views/ProductDetail.vue') },
     { path: '/props/:id', name: 'detail-props', props: true, component: () => import('@/views/ProductDetailProps.vue') },
