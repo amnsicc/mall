@@ -1,8 +1,15 @@
 <script setup>
+import { computed, onMounted, ref } from 'vue'
+import { api } from '@/api'
 import { useCart } from '@/composables/useCart'
-defineProps({ detail: Object, state: String, error: String })
+const props = defineProps({ detail: Object, state: String, error: String })
 defineEmits(['retry'])
 const { addToCart, cartCount } = useCart()
+const catalog = ref([])
+onMounted(async () => { try { catalog.value = await api.getProducts() } catch { /* Detail still has its own retry state. */ } })
+const position = computed(() => catalog.value.findIndex((p) => String(p.id) === String(props.detail?.id)))
+const previous = computed(() => position.value > 0 ? catalog.value[position.value - 1] : null)
+const next = computed(() => position.value >= 0 ? catalog.value[position.value + 1] : null)
 </script>
 <template>
   <section class="detail-page">
@@ -11,7 +18,7 @@ const { addToCart, cartCount } = useCart()
       <div class="skeleton-image" /><div><div class="skeleton-line" /><p>正在加载商品…</p></div>
     </div>
     <div v-else-if="state === 'fail'" class="detail-error" role="alert">
-      <h1>商品不存在</h1><p>{{ error }}</p><button @click="$emit('retry')">重试</button>
+      <h1>{{ error.includes('404') ? '商品不存在' : '商品加载失败' }}</h1><p>{{ error }}</p><button @click="$emit('retry')">重试</button>
     </div>
     <div v-else-if="detail" class="detail-content">
       <img class="detail-image" :src="detail.img" :alt="detail.name" />
@@ -24,8 +31,8 @@ const { addToCart, cartCount } = useCart()
         </button>
         <RouterLink class="cart-link" to="/cart">购物车 {{ cartCount }} 件</RouterLink>
         <nav class="detail-nav" aria-label="商品切换">
-          <RouterLink v-if="detail.id > 1" :to="{ name: $route.name, params: { id: detail.id - 1 }, query: $route.query }">上一件</RouterLink>
-          <RouterLink v-if="detail.id < 6" :to="{ name: $route.name, params: { id: detail.id + 1 }, query: $route.query }">下一件</RouterLink>
+          <RouterLink v-if="previous" :to="{ name: $route.name, params: { id: previous.id } }">上一件</RouterLink>
+          <RouterLink v-if="next" :to="{ name: $route.name, params: { id: next.id } }">下一件</RouterLink>
           <RouterLink :to="{ name: $route.name === 'detail-props' ? 'detail' : 'detail-props', params: { id: detail.id } }">
             {{ $route.name === 'detail-props' ? '普通详情' : 'Props 详情' }}
           </RouterLink>

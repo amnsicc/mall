@@ -1,4 +1,9 @@
 .result-tip { margin: 0 0 16px; color: #666; font-size: 13px; overflow-wrap: anywhere; }
+.catalog-loading, .catalog-error { padding-block: 24px; color: #666; }
+.skeleton-bar { height: 28px; background: #f1f1f1; margin-bottom: 16px; border-radius: 4px; }
+.skeleton-bar.short { width: 60%; }
+.catalog-error { color: #b73428; }
+.catalog-error button { padding: 8px 18px; background: #fff; border: 1px solid #bbb; border-radius: 4px; font: inherit; cursor: pointer; }
 .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .empty { padding: 48px 16px; border-block: 1px solid #ddd; text-align: center; color: #666; }
 .section-title { margin: 0; font-size: 20px; }

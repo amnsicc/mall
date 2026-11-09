@@ -6,7 +6,7 @@ import ProductCard from '@/components/ProductCard.vue'
 import Panel from '@/components/Panel.vue'
 import ProductGrid from '@/components/ProductGrid.vue'
 import ProductRow from '@/components/ProductRow.vue'
-import { products as catalog } from '@/data/products'
+import { useProductCatalog } from '@/composables/useProductCatalog'
 import { useProductFilter } from '@/composables/useProductFilter'
 import { useProductDraft } from '@/composables/useProductDraft'
 import { useCart } from '@/composables/useCart'
@@ -15,7 +15,7 @@ const { cartCount, addToCart } = useCart()
 const router = useRouter()
 const view = ref('grid')
 const views = { grid: ProductGrid, row: ProductRow }
-const products = ref(catalog)
+const { products, loading, error, load } = useProductCatalog()
 const { keyword, query, search, resetFilters, category, priceMax, desc, categories, sorted } = useProductFilter(products)
 const { selectedId, toggleSelect } = useProductDraft(keyword, search, products)
 function onCardClick(id) {
@@ -28,8 +28,10 @@ function onCardClick(id) {
   <section>
     <SearchBar v-model:keyword="keyword" v-model:category="category" v-model:price-max="priceMax"
       v-model:desc="desc" :categories="categories" @do-search="search" @do-reset="resetFilters" />
-    <p class="result-tip">{{ query ? `“${query}” · ` : '' }}共 {{ sorted.length }} 件商品</p>
-    <Panel>
+    <div v-if="loading" class="catalog-loading" role="status"><div class="skeleton-bar" /><div class="skeleton-bar short" /><p>正在加载商品…</p></div>
+    <div v-else-if="error" class="catalog-error" role="alert"><p>{{ error }}</p><button type="button" @click="load">重试</button></div>
+    <p v-if="!loading && !error" class="result-tip">{{ query ? `“${query}” · ` : '' }}共 {{ sorted.length }} 件商品</p>
+    <Panel v-show="!loading && !error">
       <template #title>
         <h2 class="section-title">商品清单</h2>
         <div class="view-modes" role="group" aria-label="商品视图">
@@ -55,7 +57,7 @@ function onCardClick(id) {
         </div>
       </template>
     </Panel>
-    <p v-if="sorted.length === 0" class="empty">没有找到相关商品</p>
+    <p v-if="!loading && !error && sorted.length === 0" class="empty">没有找到相关商品</p>
   </section>
 </template>
 
