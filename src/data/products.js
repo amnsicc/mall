@@ -5,4 +5,13 @@ export const products = [
   { id: 4, name: '罗技 mouse', price: 159, stock: 20, category: 'mouse', img: '/img/mouse.jpg' },
   { id: 5, name: '微软 key', price: 159, stock: 0, category: 'keyboard', img: '/img/keyboard.jpg' },
   { id: 6, name: 'Type C Mouse', price: 159, stock: 30, category: 'mouse', img: '/img/mouse.jpg' },
+  { id: 7, name: '静音 Mouse', price: 129, stock: 8, category: 'mouse', img: '/img/mouse.jpg' },
+  { id: 8, name: '便携 Key', price: 179, stock: 9, category: 'keyboard', img: '/img/keyboard.jpg' },
+  { id: 9, name: '四口 USB Hub', price: 89, stock: 15, category: 'hub', img: '/img/hub.png' },
+  { id: 10, name: '轻量 Mouse', price: 139, stock: 11, category: 'mouse', img: '/img/mouse.jpg' },
+  { id: 11, name: '办公 Key', price: 149, stock: 6, category: 'keyboard', img: '/img/keyboard.jpg' },
+  { id: 12, name: '便携扩展坞', price: 229, stock: 7, category: 'hub', img: '/img/hub.png' },
+  { id: 13, name: '无线 Key', price: 259, stock: 4, category: 'keyboard', img: '/img/keyboard.jpg' },
+  { id: 14, name: '蓝牙 Mouse', price: 119, stock: 18, category: 'mouse', img: '/img/mouse.jpg' },
+  { id: 15, name: '桌面扩展坞', price: 299, stock: 3, category: 'hub', img: '/img/hub.png' },
 ]

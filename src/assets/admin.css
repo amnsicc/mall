@@ -1,0 +1,12 @@
+.admin-page h2 { margin: 0; font-size: 24px; }
+.admin-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.admin-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+.admin-toolbar .el-input { width: 220px; max-width: 100%; }
+.admin-toolbar .el-select { width: 160px; max-width: 100%; }
+.admin-pagination { margin-top: 20px; overflow-x: auto; padding-bottom: 8px; }
+.admin-page { min-width: 0; }
+.admin-page .el-table { width: 100%; }
+.note-form { display: grid; gap: 12px; justify-items: start; margin-top: 28px; }
+.note-form label { color: #666; font-size: 13px; }
+.admin-error { margin-bottom: 20px; }
+@media (max-width: 640px) { .admin-pagination .el-pagination { flex-wrap: wrap; row-gap: 12px; } }

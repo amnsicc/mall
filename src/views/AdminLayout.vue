@@ -1,5 +1,8 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
+import { Goods, Tickets } from '@element-plus/icons-vue'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import '@/assets/admin.css'
 const route = useRoute()
 const router = useRouter()
 function logout() {
@@ -8,26 +11,31 @@ function logout() {
 }
 </script>
 <template>
-  <section class="admin-layout">
-    <aside class="admin-sidebar">
-      <h1>商城后台</h1>
-      <nav aria-label="后台导航">
-        <RouterLink to="/admin/products">商品管理</RouterLink>
-        <RouterLink to="/admin/orders">订单管理</RouterLink>
-      </nav>
-      <button type="button" @click="logout">退出登录</button>
-    </aside>
-    <div class="admin-content"><RouterView /></div>
-  </section>
+  <el-config-provider :locale="zhCn">
+    <el-container class="admin-layout">
+      <el-aside class="admin-sidebar" width="180px">
+        <h1>商城后台</h1>
+        <el-menu router :default-active="route.path" aria-label="后台导航">
+          <el-menu-item index="/admin/products"><el-icon><Goods /></el-icon><span>商品管理</span></el-menu-item>
+          <el-menu-item index="/admin/orders"><el-icon><Tickets /></el-icon><span>订单管理</span></el-menu-item>
+        </el-menu>
+        <el-button class="logout" @click="logout">退出登录</el-button>
+      </el-aside>
+      <el-container class="admin-body">
+        <el-header class="admin-header">管理中心</el-header>
+        <el-main><RouterView /></el-main>
+      </el-container>
+    </el-container>
+  </el-config-provider>
 </template>
 <style scoped>
-.admin-layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 32px; }
-.admin-sidebar { border-right: 1px solid #ddd; padding-right: 24px; }
-h1 { font-size: 20px; margin: 0 0 24px; }
-nav { display: grid; gap: 8px; }
-a { padding: 10px 12px; border-radius: 4px; color: #555; text-decoration: none; font-size: 14px; }
-a.router-link-active { color: #c43d2f; background: #fff1ed; }
-button { margin-top: 28px; padding: 8px 12px; background: #fff; border: 1px solid #ccc; border-radius: 4px; font: inherit; cursor: pointer; }
-.admin-content { min-width: 0; }
-@media (max-width: 640px) { .admin-layout { grid-template-columns: 1fr; gap: 24px; } .admin-sidebar { border-right: 0; border-bottom: 1px solid #ddd; padding: 0 0 20px; } nav { display: flex; flex-wrap: wrap; } button { margin-top: 12px; } }
+.admin-layout { gap: 24px; background: #fff; }
+.admin-sidebar { border-right: 1px solid #ddd; }
+h1 { font-size: 20px; margin: 12px 16px 24px; }
+.el-menu { border-right: 0; }
+.logout { margin: 24px 16px; }
+.admin-body { min-width: 0; }
+.admin-header { display: flex; align-items: center; border-bottom: 1px solid #ddd; height: 48px; padding: 0 0 16px; font-size: 14px; color: #666; }
+.el-main { padding: 24px 0 0; overflow: visible; }
+@media (max-width: 640px) { .admin-layout { flex-direction: column; } .admin-sidebar { width: 100%; border-right: 0; border-bottom: 1px solid #ddd; } .el-menu { display: flex; flex-wrap: wrap; } h1 { margin: 0 0 12px; } .logout { margin: 12px 0; } }
 </style>

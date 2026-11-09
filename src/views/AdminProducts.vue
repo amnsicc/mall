@@ -1,44 +1,32 @@
 <script setup>
-import { computed, ref } from 'vue'
-import { onBeforeRouteLeave } from 'vue-router'
+import { computed, ref, watch } from 'vue'
 import { products } from '@/data/products'
-const note = ref('')
-const savedNote = ref('')
-const dirty = computed(() => note.value !== savedNote.value)
-function save() { savedNote.value = note.value }
-onBeforeRouteLeave(() => {
-  if (!dirty.value || !localStorage.getItem('token')) return true
-  return window.confirm('备注尚未保存，确认离开并放弃修改吗？')
-})
+const list = ref(products.map((p) => ({ ...p })))
+const keyword = ref('')
+const category = ref('all')
+const page = ref(1)
+const pageSize = ref(5)
+const categories = computed(() => [...new Set(list.value.map((p) => p.category))])
+const filtered = computed(() => list.value.filter((p) => p.name.toLowerCase().includes(keyword.value.trim().toLowerCase()) && (category.value === 'all' || p.category === category.value)))
+const paged = computed(() => filtered.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value))
+watch([keyword, category, pageSize], () => { page.value = 1 })
 </script>
 <template>
-  <section>
-    <h2>商品管理</h2>
-    <div class="table-scroll"><table>
-      <thead><tr><th>商品</th><th>分类</th><th>价格</th><th>库存</th></tr></thead>
-      <tbody><tr v-for="p in products" :key="p.id">
-        <td><RouterLink :to="{ name: 'detail', params: { id: p.id } }">{{ p.name }}</RouterLink></td>
-        <td>{{ p.category }}</td><td>¥ {{ p.price }}</td><td>{{ p.stock }}</td>
-      </tr></tbody>
-    </table></div>
-    <form class="note-form" @submit.prevent="save">
-      <label for="admin-note">本次管理备注 <span>{{ dirty ? '未保存' : '已保存' }}</span></label>
-      <textarea id="admin-note" v-model="note" rows="3" />
-      <button :disabled="!dirty">保存备注</button>
-    </form>
+  <section class="admin-page">
+    <header class="admin-heading"><h2>商品管理</h2><span>{{ filtered.length }} 件商品</span></header>
+    <div class="admin-toolbar">
+      <el-input v-model="keyword" clearable placeholder="搜索商品名称" aria-label="搜索商品名称" />
+      <el-select v-model="category" aria-label="商品分类"><el-option label="全部分类" value="all" /><el-option v-for="c in categories" :key="c" :label="c" :value="c" /></el-select>
+    </div>
+    <el-table :data="paged" border stripe>
+      <el-table-column prop="id" label="ID" width="70" />
+      <el-table-column prop="name" label="商品名称" min-width="160" />
+      <el-table-column prop="category" label="分类" width="110" />
+      <el-table-column label="价格" width="100"><template #default="{ row }">¥ {{ row.price }}</template></el-table-column>
+      <el-table-column prop="stock" label="库存" width="80" />
+      <el-table-column label="操作" width="100"><template #default="{ row }"><el-link :href="`#/products/${row.id}`">查看</el-link></template></el-table-column>
+      <template #empty><el-empty description="没有匹配的商品" /></template>
+    </el-table>
+    <div class="admin-pagination"><el-pagination v-model:current-page="page" v-model:page-size="pageSize" :total="filtered.length" :page-sizes="[5, 10, 20]" layout="total, sizes, prev, pager, next" /></div>
   </section>
 </template>
-<style scoped>
-h2 { font-size: 24px; margin: 0 0 24px; }
-.table-scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-th { background: #f7f7f7; color: #666; font-weight: 500; }
-td, th { padding: 14px 10px; border-bottom: 1px solid #ddd; white-space: nowrap; }
-a { color: #333; text-underline-offset: 4px; }
-.note-form { display: grid; justify-items: start; gap: 12px; margin-top: 32px; }
-label { width: 100%; font-size: 14px; }
-label span { margin-left: 12px; color: #777; font-size: 12px; }
-textarea { width: 100%; resize: vertical; font: inherit; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-button { padding: 8px 16px; background: #202020; color: #fff; border: 0; border-radius: 4px; font: inherit; cursor: pointer; }
-button:disabled { opacity: .45; cursor: not-allowed; }
-</style>
