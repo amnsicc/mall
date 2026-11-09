@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { api } from '@/api'
 const route = useRoute()
 const router = useRouter()
 const form = reactive({ username: '', password: '' })
@@ -16,11 +17,12 @@ async function login() {
   busy.value = true
   error.value = ''
   try {
-    localStorage.setItem('token', 'course-demo-token')
+    const user = await api.login(form)
+    ElMessage.success(`欢迎，${user.nickname}`)
     const target = route.query.from
     const destination = typeof target === 'string' && target.startsWith('/') && !target.startsWith('//') && !target.startsWith('/login') ? target : '/admin/products'
     await router.replace(destination)
-  } catch { error.value = '登录失败，请重试' }
+  } catch (reason) { error.value = reason.response ? '登录服务暂不可用，请重试' : reason.message }
   finally { busy.value = false }
 }
 </script>

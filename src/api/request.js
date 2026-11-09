@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { setSession } from '../composables/useAuth.js'
 
 const request = axios.create({ baseURL: '/api', timeout: 8000 })
 request.interceptors.request.use((config) => {
@@ -13,11 +14,13 @@ request.interceptors.response.use((response) => {
   return response.data
 }, (error) => {
   if (axios.isCancel(error)) return Promise.reject(error)
-  ElMessage.error(error.response ? `请求失败（HTTP ${error.response.status}）` : '网络异常，请确认模拟后端已启动')
+  if (typeof window !== 'undefined') ElMessage.error(error.response ? `请求失败（HTTP ${error.response.status}）` : '网络异常，请确认模拟后端已启动')
   if (error.response?.status === 401) {
-    localStorage.removeItem('token')
-    const from = location.hash.slice(1) || '/products'
-    if (!from.startsWith('/login')) location.hash = '/login?from=' + encodeURIComponent(from)
+    setSession('')
+    if (typeof location !== 'undefined') {
+      const from = location.hash.slice(1) || '/products'
+      if (!from.startsWith('/login')) location.hash = '/login?from=' + encodeURIComponent(from)
+    }
   }
   return Promise.reject(error)
 })

@@ -1,7 +1,9 @@
-import * as product from './product'
+import * as product from './product.js'
+import * as auth from './auth.js'
 
 export const api = {
   ...product,
+  ...auth,
   saveProduct(form) {
     const { id, ...payload } = form
     // PUT replaces the record: always preserve stock and image, even if the form hides them.

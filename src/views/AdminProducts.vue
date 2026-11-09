@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onScopeDispose, reactive, ref, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 import { api } from '@/api'
@@ -11,20 +11,36 @@ const pageSize = ref(5)
 const categories = ref([])
 const loading = ref(false)
 const error = ref('')
-const filtered = computed(() => list.value.filter((p) => p.name.toLowerCase().includes(keyword.value.trim().toLowerCase()) && (category.value === 'all' || p.category === category.value)))
-const total = computed(() => filtered.value.length)
-const paged = computed(() => filtered.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value))
+const total = ref(0)
+const paged = computed(() => list.value)
+let version = 0
 async function load() {
+  const current = ++version
   loading.value = true
   error.value = ''
   try {
-    list.value = await api.getProducts()
-    categories.value = await api.getCategories()
-    page.value = Math.min(page.value, Math.max(1, Math.ceil(total.value / pageSize.value)))
-  } catch { error.value = '商品加载失败，请检查服务后重试。' }
-  finally { loading.value = false }
+    const [result, options] = await Promise.all([
+      api.getProductPage({ page: page.value, pageSize: pageSize.value, keyword: keyword.value, category: category.value }),
+      api.getCategories(),
+    ])
+    if (current !== version) return
+    list.value = result.items
+    total.value = result.total
+    categories.value = options
+    const lastPage = Math.max(1, Math.ceil(total.value / pageSize.value))
+    if (page.value > lastPage) { page.value = lastPage; return }
+  } catch { if (current === version) error.value = '商品加载失败，请检查服务后重试。' }
+  finally { if (current === version) loading.value = false }
 }
-watch([keyword, category, pageSize], () => { page.value = 1 })
+let timer
+watch([keyword, category], () => {
+  version++
+  clearTimeout(timer)
+  timer = setTimeout(() => { if (page.value !== 1) page.value = 1; else load() }, 200)
+})
+watch(pageSize, () => { if (page.value !== 1) page.value = 1; else load() })
+watch(page, load)
+onScopeDispose(() => { clearTimeout(timer); version++ })
 onMounted(load)
 
 const dialog = ref(false)

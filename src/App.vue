@@ -1,6 +1,10 @@
 <script setup>
 import { useCart } from '@/composables/useCart'
+import { useRoute } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 const { cartCount } = useCart()
+const { token } = useAuth()
+const route = useRoute()
 </script>
 <template>
   <header class="site-header">
@@ -9,6 +13,7 @@ const { cartCount } = useCart()
       <RouterLink to="/products">商品</RouterLink>
       <RouterLink to="/cart">购物车 {{ cartCount }}</RouterLink>
     </nav>
+    <span v-if="route.path.startsWith('/admin') || route.path === '/login'" class="session-status">{{ token ? '已登录' : '未登录' }}</span>
   </header>
 
   <main>
@@ -33,6 +38,7 @@ const { cartCount } = useCart()
 nav { display: flex; flex-wrap: wrap; gap: 16px; padding-block: 12px; }
 nav a { color: #666; text-decoration: none; font-size: 14px; }
 nav a.router-link-active { color: #c43d2f; }
+.session-status { margin-left: auto; color: #666; font-size: 13px; }
 
 .brand {
   color: #1d1d1b;

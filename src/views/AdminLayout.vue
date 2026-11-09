@@ -3,10 +3,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { Goods, Tickets } from '@element-plus/icons-vue'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import '@/assets/admin.css'
+import { api } from '@/api'
 const route = useRoute()
 const router = useRouter()
 function logout() {
-  localStorage.removeItem('token')
+  api.logout()
   router.replace({ name: 'login', query: { from: route.fullPath } })
 }
 </script>

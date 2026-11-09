@@ -1,4 +1,5 @@
-:root {
+/* Keep the app theme above lazy-loaded Element Plus :root defaults. */
+:root:root {
   --el-color-primary: #2f9e6e;
   --el-border-radius-base: 6px;
   --el-bg-color: #fff;

@@ -1,10 +1,10 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { ref } from 'vue'
-import { products } from '../src/data/products.js'
+import { readFileSync } from 'node:fs'
+const products = JSON.parse(readFileSync(new URL('../db.json', import.meta.url))).products.slice(0, 6)
 import { useProductFilter } from '../src/composables/useProductFilter.js'
 import { useCart } from '../src/composables/useCart.js'
-import { api } from '../src/api/index.js'
 
 test('draft and submitted query stay separate; filters compose without mutating products', () => {
   const source = ref(products.map((p) => ({ ...p })))
@@ -53,11 +53,13 @@ test('cart quantities respect stock, totals and removal', () => {
   assert.equal(c.total.value, 0)
 })
 
-test('mock API uses the same catalog as the list and rejects unknown IDs', async () => {
-  const product = await api.getProduct('1')
-  assert.deepEqual(product, products[0])
-  product.name = 'changed response'
-  assert.equal(products[0].name, '机械 Key')
-  await assert.rejects(api.getProduct('999'), /商品不存在/)
-  await assert.rejects(api.getProduct('1abc'), /商品不存在/)
+test('refreshing catalog reconciles cart prices, stock and removed products', () => {
+  const c = useCart()
+  c.addToCart(products[0])
+  c.setQuantity(1, 4)
+  c.syncCatalog([{ ...products[0], price: 300, stock: 2 }])
+  assert.equal(c.cartCount.value, 2)
+  assert.equal(c.total.value, 600)
+  c.syncCatalog([])
+  assert.equal(c.cartCount.value, 0)
 })

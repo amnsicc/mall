@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "node --test tests/*.test.js",
     "mock": "json-server --watch db.json --host 127.0.0.1 --port 3001",
-    "measure:bundles": "node scripts/measure-bundles.mjs"
+    "measure:bundles": "node scripts/measure-bundles.mjs",
+    "test:e2e": "node scripts/verify-week09-10.mjs"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.8",
     "json-server": "0.17.4",
+    "playwright-core": "^1.65.0",
     "unplugin-auto-import": "^21.1.0",
     "unplugin-vue-components": "^32.1.0",
     "vite": "^8.2.2",
