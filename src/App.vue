@@ -11,7 +11,7 @@ const route = useRoute()
     <RouterLink class="brand" to="/products">微商城</RouterLink>
     <nav aria-label="主导航">
       <RouterLink to="/products">商品</RouterLink>
-      <RouterLink to="/cart">购物车 {{ cartCount }}</RouterLink>
+      <RouterLink to="/cart">购物车 <el-badge :value="cartCount" :max="99" :hidden="cartCount === 0" /></RouterLink>
     </nav>
     <span v-if="route.path.startsWith('/admin') || route.path === '/login'" class="session-status">{{ token ? '已登录' : '未登录' }}</span>
   </header>

@@ -5,6 +5,8 @@ import { readFileSync } from 'node:fs'
 const products = JSON.parse(readFileSync(new URL('../db.json', import.meta.url))).products.slice(0, 6)
 import { useProductFilter } from '../src/composables/useProductFilter.js'
 import { useCart } from '../src/composables/useCart.js'
+import { useCartStore } from '../src/stores/cart.js'
+import { pinia } from '../src/stores/index.js'
 
 test('draft and submitted query stay separate; filters compose without mutating products', () => {
   const source = ref(products.map((p) => ({ ...p })))
@@ -53,13 +55,33 @@ test('cart quantities respect stock, totals and removal', () => {
   assert.equal(c.total.value, 0)
 })
 
-test('refreshing catalog reconciles cart prices, stock and removed products', () => {
+test('refreshing catalog preserves the price snapshot and reconciles stock and removed products', () => {
   const c = useCart()
   c.addToCart(products[0])
   c.setQuantity(1, 4)
   c.syncCatalog([{ ...products[0], price: 300, stock: 2 }])
   assert.equal(c.cartCount.value, 2)
-  assert.equal(c.total.value, 600)
+  assert.equal(c.total.value, products[0].price * 2)
   c.syncCatalog([])
   assert.equal(c.cartCount.value, 0)
+})
+
+test('Pinia cart validates quantities, merges mixed ID types and clears through actions', () => {
+  const cart = useCartStore(pinia)
+  cart.clear()
+  cart.add(products[0])
+  cart.add({ ...products[0], id: String(products[0].id), price: 999 })
+  assert.equal(cart.items.length, 1)
+  assert.equal(cart.totalCount, 2)
+  assert.equal(cart.totalPrice, products[0].price * 2)
+  for (const value of [undefined, NaN, Infinity, 1.5, '3']) cart.setCount(products[0].id, value)
+  assert.equal(cart.totalCount, 2)
+  cart.setCount(products[0].id, 999)
+  assert.equal(cart.totalCount, products[0].stock)
+  cart.remove(String(products[0].id))
+  assert.equal(cart.isEmpty, true)
+  cart.add(products[1])
+  cart.clear()
+  assert.equal(cart.totalCount, 0)
+  assert.equal(cart.totalPrice, 0)
 })

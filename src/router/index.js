@@ -1,4 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { pinia } from '../stores/index.js'
+import { useUserStore } from '../stores/user.js'
 
 // Preserve old direct URLs when moving the course project from history to hash routing.
 if (!location.hash && location.pathname !== '/' && !/\.html?$/.test(location.pathname)) {
@@ -42,8 +44,7 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   if (to.meta.guest) return true
-  // Read storage on each navigation, including the first navigation after a refresh.
-  if (to.meta.requiresAuth && !localStorage.getItem('token')) {
+  if (to.meta.requiresAuth && !useUserStore(pinia).isLogin) {
     return { name: 'login', query: { from: to.fullPath } }
   }
   return true

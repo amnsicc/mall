@@ -7,7 +7,7 @@ import { createServer as createViteServer, loadConfigFromFile } from 'vite'
 import { performance } from 'node:perf_hooks'
 
 const origin = process.env.APP_URL || 'http://127.0.0.1:4173'
-const output = 'reports/evidence'
+const output = process.env.COURSE_EVIDENCE_DIR || 'reports/evidence'
 await mkdir(output, { recursive: true })
 let executablePath = process.env.BROWSER_PATH
 if (!executablePath) {
@@ -59,7 +59,7 @@ try {
   await page.evaluate(() => localStorage.clear())
   await page.reload({ waitUntil: 'networkidle' })
   await waitCards()
-  check((await page.getByRole('navigation', { name: '主导航' }).getByRole('link').allTextContents()).join('|') === '商品|购物车 0', 'customer navigation stays separate from coursework/admin')
+  check((await page.getByRole('navigation', { name: '主导航' }).getByRole('link').allTextContents()).map((text) => text.trim()).join('|') === '商品|购物车', 'customer navigation stays separate from coursework/admin')
   check(!((await page.locator('body').innerText()).includes('WEEK 08')), 'no course week banner')
   check(await page.locator('.product-card img').evaluateAll((imgs) => imgs.every((i) => i.complete && i.naturalWidth > 0)), 'all API product images render')
   check(await page.getByRole('searchbox').evaluate((el) => document.activeElement === el), 'v-focus preserved')
@@ -265,7 +265,11 @@ try {
   expectedNetwork = false
   await new Promise((resolve) => corsServer.close(resolve)); corsServer = undefined
 
-  await page.evaluate(() => localStorage.setItem('token', 'expired-demo-token'))
+  await page.evaluate(async () => {
+    const { pinia } = await import('/src/stores/index.js')
+    const { useUserStore } = await import('/src/stores/user.js')
+    useUserStore(pinia).setSession('expired-demo-token')
+  })
   await page.route('**/api/products*', (route) => route.fulfill({ status: 401, contentType: 'application/json', body: '{"message":"expired"}' }))
   expectedNetwork = true
   await goto('/admin/products')
@@ -281,7 +285,11 @@ try {
       check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${label} no horizontal overflow ${width}px`)
       if (width !== 319) await screenshot(`${label}-${width}`)
     }
-    await page.evaluate(() => localStorage.setItem('token', 'mock-token-1'))
+    await page.evaluate(async () => {
+      const { pinia } = await import('/src/stores/index.js')
+      const { useUserStore } = await import('/src/stores/user.js')
+      useUserStore(pinia).setSession('mock-token-1')
+    })
     await goto('/admin/products')
     check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `admin no horizontal overflow ${width}px`)
     if (width !== 319) await screenshot(`admin-${width}`)
@@ -293,7 +301,7 @@ try {
   diagnostics.checks = results
   diagnostics.count = results.length
   diagnostics.unexpected = unexpected
-  await writeFile('reports/browser-verification.json', JSON.stringify(diagnostics, null, 2) + '\n')
+  await writeFile(process.env.COURSE_REPORT_PATH || 'reports/browser-verification.json', JSON.stringify(diagnostics, null, 2) + '\n')
   console.log(`COMPLETE ${results.length} checks; reports/evidence`)
 } finally {
   if (createdId) { try { await fetch(`http://127.0.0.1:3001/products/${createdId}`, { method: 'DELETE' }) } catch {} }

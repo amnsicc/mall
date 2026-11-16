@@ -3,11 +3,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { Goods, Tickets } from '@element-plus/icons-vue'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import '@/assets/admin.css'
-import { api } from '@/api'
+import { useUserStore } from '@/stores/user'
+const user = useUserStore()
 const route = useRoute()
 const router = useRouter()
 function logout() {
-  api.logout()
+  user.logout()
   router.replace({ name: 'login', query: { from: route.fullPath } })
 }
 </script>
@@ -23,7 +24,7 @@ function logout() {
         <el-button class="logout" @click="logout">退出登录</el-button>
       </el-aside>
       <el-container class="admin-body">
-        <el-header class="admin-header">管理中心</el-header>
+        <el-header class="admin-header">管理中心 · {{ user.profile?.nickname || '已登录用户' }}</el-header>
         <el-main><RouterView /></el-main>
       </el-container>
     </el-container>

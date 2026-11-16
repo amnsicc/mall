@@ -1,7 +1,8 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { api } from '@/api'
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore()
 const route = useRoute()
 const router = useRouter()
 const form = reactive({ username: '', password: '' })
@@ -17,7 +18,7 @@ async function login() {
   busy.value = true
   error.value = ''
   try {
-    const user = await api.login(form)
+    const user = await userStore.login(form)
     ElMessage.success(`欢迎，${user.nickname}`)
     const target = route.query.from
     const destination = typeof target === 'string' && target.startsWith('/') && !target.startsWith('//') && !target.startsWith('/login') ? target : '/admin/products'

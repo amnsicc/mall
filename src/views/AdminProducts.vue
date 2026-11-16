@@ -3,6 +3,8 @@ import { computed, nextTick, onMounted, onScopeDispose, reactive, ref, watch } f
 import { onBeforeRouteLeave } from 'vue-router'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 import { api } from '@/api'
+import { useUserStore } from '@/stores/user'
+const user = useUserStore()
 const list = ref([])
 const keyword = ref('')
 const category = ref('all')
@@ -80,7 +82,7 @@ async function askDelete(row) {
 const note = ref('')
 const savedNote = ref('')
 onBeforeRouteLeave(async () => {
-  if (note.value === savedNote.value || !localStorage.getItem('token')) return true
+  if (note.value === savedNote.value || !user.isLogin) return true
   try { await ElMessageBox.confirm('备注尚未保存，确认离开并放弃修改吗？', '离开确认', { confirmButtonText: '离开', cancelButtonText: '继续编辑' }); return true }
   catch { return false }
 })

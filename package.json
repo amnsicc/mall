@@ -10,12 +10,16 @@
     "test": "node --test tests/*.test.js",
     "mock": "json-server --watch db.json --host 127.0.0.1 --port 3001",
     "measure:bundles": "node scripts/measure-bundles.mjs",
-    "test:e2e": "node scripts/verify-week09-10.mjs"
+    "test:e2e": "node scripts/verify-week09-10.mjs",
+    "test:week11": "node scripts/verify-week11.mjs"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@vue/devtools-api": "^8.2.1",
     "axios": "^1.21.0",
     "element-plus": "2.14.7",
+    "pinia": "^4.1.0",
+    "pinia-plugin-persistedstate": "^4.7.1",
     "vue": "^3.5.42",
     "vue-router": "^5.3.1"
   },

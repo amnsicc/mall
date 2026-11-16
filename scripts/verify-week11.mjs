@@ -1,0 +1,126 @@
+import { chromium } from 'playwright-core'
+import assert from 'node:assert/strict'
+import { mkdir, writeFile } from 'node:fs/promises'
+
+const output = 'reports/week11-evidence'
+await mkdir(output, { recursive: true })
+const browser = await chromium.launch({ executablePath: process.env.BROWSER_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true })
+const checks = []
+const errors = []
+let page
+function check(value, label) { assert.ok(value, label); checks.push(label); console.log('PASS', label) }
+try {
+  page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
+  page.on('pageerror', (error) => errors.push(error.message))
+  const go = async (path) => {
+    await page.goto(`http://127.0.0.1:4173/#${path}`, { waitUntil: 'networkidle' })
+  }
+  await go('/products')
+  await page.evaluate(() => localStorage.clear())
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.locator('.product-card').first().waitFor()
+  check(await page.locator('nav a').count() === 2, 'customer navigation has only products and cart')
+  const button = page.locator('.add-button:not([disabled])').first()
+  await button.click()
+  await button.click()
+  check((await page.locator('nav .el-badge').innerText()).trim() === '2', 'badge updates after two additions')
+  await page.locator('nav a[href="#/cart"]').click()
+  await page.locator('.cart-items li').first().waitFor()
+  check(await page.locator('.cart-items li').count() === 1, 'duplicate product merges into one row')
+  check((await page.locator('output').innerText()).trim() === '2', 'quantity is two')
+  const before = await page.locator('.cart-total strong').innerText()
+  await page.reload({ waitUntil: 'networkidle' })
+  check(await page.locator('.cart-total strong').innerText() === before, 'refresh preserves total')
+  check((await page.locator('output').innerText()).trim() === '2', 'refresh preserves items and quantity')
+  check(Boolean(await page.evaluate(() => JSON.parse(localStorage.getItem('cart')).items.length)), 'cart persisted under its own storage key')
+  await page.screenshot({ path: `${output}/cart-after-refresh.png`, fullPage: true })
+  await page.getByRole('button', { name: /^增加/ }).click()
+  check((await page.locator('output').innerText()).trim() === '3', 'increment action updates quantity')
+  await page.getByRole('button', { name: /^减少/ }).click()
+  check(await page.locator('.cart-total strong').innerText() === before, 'decrement recomputes total')
+  await page.getByRole('button', { name: '清空购物车', exact: true }).click()
+  await page.getByRole('button', { name: '取消', exact: true }).click()
+  check(await page.locator('.cart-items li').count() === 1, 'cancel clear preserves cart')
+
+  // Open the actual embedded Vue Devtools, not an imitation of its UI.
+  await page.locator('.panel-entry-btn').click()
+  const devtools = page.frameLocator('#vue-devtools-iframe')
+  await devtools.locator('a[href="/pinia"]').click()
+  await devtools.getByText('Pinia (root)', { exact: false }).waitFor()
+  await devtools.getByText('cart', { exact: true }).first().click()
+  await page.waitForTimeout(400)
+  check((await devtools.locator('body').innerText()).includes('totalPrice'), 'Devtools exposes cart state and getters')
+  await page.screenshot({ path: `${output}/devtools-stores.png`, fullPage: true })
+  await devtools.getByText('Timeline', { exact: true }).click()
+  await page.waitForTimeout(400)
+  await devtools.locator('.recording-btn').click()
+  await devtools.locator('.recording-btn:not(.bg-black)').waitFor()
+  await page.getByRole('button', { name: /^增加/ }).click()
+  await devtools.getByText(/setCount/).first().waitFor()
+  check((await devtools.locator('body').innerText()).includes('setCount'), 'actual cart action appears in Devtools timeline')
+  await page.screenshot({ path: `${output}/devtools-action.png`, fullPage: true })
+  await page.locator('.panel-entry-btn').click()
+
+  await page.getByRole('button', { name: /^移除/ }).click()
+  check(await page.locator('.empty-cart').isVisible(), 'remove action deletes the row')
+  await page.getByRole('link', { name: '去挑选商品', exact: true }).click()
+  await page.locator('.add-button:not([disabled])').first().click()
+  await page.locator('nav a[href="#/cart"]').click()
+  await page.locator('.cart-items li').first().waitFor()
+
+  await page.getByRole('button', { name: '清空购物车', exact: true }).click()
+  await page.getByRole('button', { name: '清空', exact: true }).click()
+  check(await page.locator('.empty-cart').isVisible(), 'confirm clear shows empty state')
+  await page.reload({ waitUntil: 'networkidle' })
+  check(await page.locator('.empty-cart').isVisible(), 'cleared cart stays empty on refresh')
+  await go('/admin/products')
+  await page.getByRole('heading', { name: '登录', exact: true }).waitFor()
+  check(page.url().includes('/login?from='), 'anonymous guard preserves destination')
+  await page.getByLabel('用户名', { exact: true }).fill('admin')
+  await page.getByLabel('密码', { exact: true }).fill('wrong')
+  await page.getByRole('button', { name: '登录', exact: true }).click()
+  await page.getByText('用户名或密码错误', { exact: true }).waitFor()
+  check(!await page.evaluate(() => localStorage.getItem('token')), 'wrong password has no session')
+  await page.getByLabel('密码', { exact: true }).fill('123456')
+  await page.getByRole('button', { name: '登录', exact: true }).click()
+  await page.getByRole('heading', { name: '商品管理', exact: true }).waitFor()
+  check(await page.locator('.admin-header').innerText() === '管理中心 · 管理员', 'user nickname shown after returning to destination')
+  const authorizedRequest = page.waitForRequest((request) => request.url().includes('/api/products?'))
+  await page.reload({ waitUntil: 'networkidle' })
+  check((await authorizedRequest).headers().authorization === 'Bearer mock-token-1', 'persisted login still injects Authorization')
+  check(await page.locator('.admin-header').innerText() === '管理中心 · 管理员', 'profile and session persist on refresh')
+  await page.screenshot({ path: `${output}/admin-user.png`, fullPage: true })
+  await page.getByRole('button', { name: '退出登录', exact: true }).click()
+  await page.getByRole('heading', { name: '登录', exact: true }).waitFor()
+  check(!await page.evaluate(() => localStorage.getItem('token')), 'logout clears interceptor token')
+  await go('/admin/orders')
+  await page.waitForURL('**/login?from=**')
+  check(page.url().includes('/login?from='), 'logout blocks subsequent protected route')
+
+  await page.getByLabel('用户名', { exact: true }).fill('admin')
+  await page.getByLabel('密码', { exact: true }).fill('123456')
+  await page.getByRole('button', { name: '登录', exact: true }).click()
+  await page.getByRole('heading', { name: '订单管理', exact: true }).waitFor()
+  await page.route('**/api/products*', (route) => route.fulfill({ status: 401, contentType: 'application/json', body: '{"message":"expired"}' }))
+  await go('/admin/products')
+  await page.waitForURL('**/login?from=**')
+  check(await page.evaluate(() => !localStorage.getItem('token') && !JSON.parse(localStorage.getItem('user')).token), '401 clears both user store and compatible token')
+  await page.unroute('**/api/products*')
+  await page.reload({ waitUntil: 'networkidle' })
+  check(await page.locator('.session-status').innerText() === '未登录', '401 session stays cleared after refresh')
+
+  for (const width of [1440, 390, 319]) {
+    await page.setViewportSize({ width, height: 900 })
+    await go('/cart')
+    check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `cart fits ${width}px`)
+  }
+  check(errors.length === 0, 'no uncaught browser errors')
+  await writeFile('reports/week11-verification.json', JSON.stringify({ date: '2026-11-16', checks, errors }, null, 2) + '\n')
+} catch (error) {
+  console.log('FAILED PAGE', page?.url(), await page?.locator('body').innerText())
+  console.log('DEVTOOLS FAILURE', await page?.frameLocator('#vue-devtools-iframe').locator('body').innerHTML({ timeout: 1000 }).then((text) => text.slice(-3200)).catch(() => 'closed'))
+  await page?.screenshot({ path: `${output}/failure.png`, fullPage: true })
+  throw error
+} finally {
+  await browser.close()
+}

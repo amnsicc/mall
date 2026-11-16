@@ -1,25 +1,33 @@
 <script setup>
-import { useCart } from '@/composables/useCart'
-const { items, cartCount, total, setQuantity } = useCart()
+import { storeToRefs } from 'pinia'
+import { useCartStore } from '@/stores/cart'
+const cart = useCartStore()
+const { items, totalCount: cartCount, totalPrice: total, isEmpty } = storeToRefs(cart)
+async function clearCart() {
+  try {
+    await ElMessageBox.confirm('确定清空购物车吗？', '清空确认', { confirmButtonText: '清空', cancelButtonText: '取消' })
+    cart.clear()
+  } catch { /* Cancellation keeps the current cart. */ }
+}
 </script>
 <template>
   <section>
     <header class="cart-heading"><h1>购物车</h1><span>{{ cartCount }} 件商品</span></header>
-    <div v-if="!items.length" class="empty-cart"><p>购物车还是空的</p><RouterLink to="/products">去挑选商品</RouterLink></div>
+    <div v-if="isEmpty" class="empty-cart"><p>购物车还是空的</p><RouterLink to="/products">去挑选商品</RouterLink></div>
     <ul v-else class="cart-items">
       <li v-for="item in items" :key="item.id">
         <img :src="item.img" :alt="item.name" />
         <div class="cart-info"><RouterLink :to="{ name: 'detail', params: { id: item.id } }">{{ item.name }}</RouterLink><p>¥ {{ item.price }}</p></div>
         <div class="quantity-control">
-          <button :aria-label="`减少${item.name}`" @click="setQuantity(item.id, item.quantity - 1)">-</button>
+          <button :aria-label="`减少${item.name}`" @click="cart.setCount(item.id, item.quantity - 1)">-</button>
           <output :aria-label="`${item.name}数量`">{{ item.quantity }}</output>
-          <button :aria-label="`增加${item.name}`" :disabled="item.quantity >= item.stock" @click="setQuantity(item.id, item.quantity + 1)">+</button>
+          <button :aria-label="`增加${item.name}`" :disabled="item.quantity >= item.stock" @click="cart.setCount(item.id, item.quantity + 1)">+</button>
         </div>
         <strong>¥ {{ item.price * item.quantity }}</strong>
-        <button class="remove-button" :aria-label="`移除${item.name}`" @click="setQuantity(item.id, 0)">移除</button>
+        <button class="remove-button" :aria-label="`移除${item.name}`" @click="cart.remove(item.id)">移除</button>
       </li>
     </ul>
-    <footer v-if="items.length" class="cart-total">合计 <strong>¥ {{ total }}</strong><RouterLink to="/products">继续选购</RouterLink></footer>
+    <footer v-if="items.length" class="cart-total">合计 <strong>¥ {{ total }}</strong><el-button @click="clearCart">清空购物车</el-button><RouterLink to="/products">继续选购</RouterLink></footer>
   </section>
 </template>
 <style scoped>

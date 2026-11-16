@@ -1,9 +1,11 @@
-import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { pinia } from '../stores/index.js'
+import { useUserStore } from '../stores/user.js'
 
-const token = ref(typeof localStorage === 'undefined' ? '' : localStorage.getItem('token') || '')
 export function setSession(value) {
-  token.value = value
-  if (value) localStorage.setItem('token', value)
-  else localStorage.removeItem('token')
+  useUserStore(pinia).setSession(value)
 }
-export function useAuth() { return { token, setSession } }
+export function useAuth() {
+  const user = useUserStore(pinia)
+  return { ...storeToRefs(user), setSession }
+}
